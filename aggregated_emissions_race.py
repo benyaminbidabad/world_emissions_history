@@ -9,7 +9,7 @@ from matplotlib.ticker import ScalarFormatter,FuncFormatter
 data=pd.read_csv("./input/data.csv")
 data=data[(data.Code!="OWID_WRL")&(pd.notna(data.Code))]
 data=data[(data.Year>=1900)]
-fig,ax=plt.subplots(figsize=(9,5))
+fig,ax=plt.subplots(figsize=(10,5))
 ax.set_xticks([]) #######
 codes=pd.DataFrame()
 
@@ -23,16 +23,16 @@ data['Aggregated emissions'] = data.groupby('Code')['Annual CO₂ emissions'].cu
 print(data)
 def func(year):
     ax.clear()
-    cumulative_data=data[(data["Year"]==year)&(pd.notna(data["Code"]))]
+    cumulative_data=pd.pivot_table(data=data,values="Aggregated emissions",index="Year",columns="Code",aggfunc="sum")
+    cumulative_data=cumulative_data[(cumulative_data["Year"]<=year)].sort_values("Aggregated emissions").tail(10)
     ax.set_ylabel("Million tons of CO2e",size=14)
-    cumulative_data=data[(data["Year"]==year)&(pd.notna(data["Code"]))].sort_values("Aggregated emissions").tail(10)
-    label=cumulative_data.loc[cumulative_data.Year==year,"Code"]
-    h=cumulative_data.loc[cumulative_data["Year"]== year, "Aggregated emissions"]
-    ax.set_ylim(0,data.loc[(data["Year"]==year),"Aggregated emissions"].max()*11/10)
+    label=cumulative_data.loc[cumulative_data.Year<=year,"Year"]
+    h=cumulative_data.loc[cumulative_data["Year"]<=year, "Aggregated emissions"] 
+    #ax.set_ylim(0,cumulative_data.loc[(cumulative_data["Year"]==year),"Aggregated emissions"].max()*11/10)
 
-    ax.set_title(f"Cumulative emissions until {year}",size=18,weight="bold")
+    ax.set_title(f"Cumulative emissions from 1900 until {year}",size=18,weight="bold")
     colormap=cm.viridis(cumulative_data["colors"])
-    ax.bar(x=label,height=h,color=colormap)
+    ax.scatter(x=label,y=h,color=colormap)
     ax.yaxis.set_major_formatter(ScalarFormatter())
     formatter = ScalarFormatter()
     formatter.set_scientific(False)  # Disable scientific notation
