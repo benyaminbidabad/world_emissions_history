@@ -23,10 +23,10 @@ data['Aggregated emissions'] = data.groupby('Code')['Annual CO₂ emissions'].cu
 print(data)
 def func(year):
     ax.clear()
-    cumulative_data=pd.pivot_table(data=data,values="Aggregated emissions",index="Year",columns="Code",aggfunc="sum")
-    cumulative_data=cumulative_data[(cumulative_data["Year"]<=year)].sort_values("Aggregated emissions").tail(10)
+    #cumulative_data=pd.pivot_table(data=data,values="Aggregated emissions",index="Year",columns="Code",aggfunc="sum")
+    cumulative_data=data[(data["Year"]<=year)].sort_values("Aggregated emissions")
     ax.set_ylabel("Million tons of CO2e",size=14)
-    label=cumulative_data.loc[cumulative_data.Year<=year,"Year"]
+    label=cumulative_data.loc[(cumulative_data.Year<=year),"Year"]
     h=cumulative_data.loc[cumulative_data["Year"]<=year, "Aggregated emissions"] 
     #ax.set_ylim(0,cumulative_data.loc[(cumulative_data["Year"]==year),"Aggregated emissions"].max()*11/10)
 
@@ -42,6 +42,6 @@ def func(year):
     ax.tick_params(axis='both', which='major', labelsize=14)
 
 animation=FuncAnimation(fig,func,frames=sorted(data["Year"].unique()))
-animation.save("./aggregated_emissions.gif",dpi=100,writer=PillowWriter(fps=5))
+animation.save("./aggregated_emissions_race.gif",dpi=100,writer=PillowWriter(fps=5))
 plt.show()
 
