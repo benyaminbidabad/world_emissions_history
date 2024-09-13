@@ -26,13 +26,18 @@ def func(year):
     #cumulative_data=pd.pivot_table(data=data,values="Aggregated emissions",index="Year",columns="Code",aggfunc="sum")
     cumulative_data=data[(data["Year"]<=year)].sort_values("Aggregated emissions")
     ax.set_ylabel("Million tons of CO2e",size=14)
-    label=cumulative_data.loc[(cumulative_data.Year<=year),"Year"]
+    x=cumulative_data.loc[(cumulative_data.Year<=year),"Year"]
     h=cumulative_data.loc[cumulative_data["Year"]<=year, "Aggregated emissions"] 
     #ax.set_ylim(0,cumulative_data.loc[(cumulative_data["Year"]==year),"Aggregated emissions"].max()*11/10)
-
+    #ax.set_xlim(1900,2022)
+    ax.legend()
     ax.set_title(f"Cumulative emissions from 1900 until {year}",size=18,weight="bold")
     colormap=cm.viridis(cumulative_data["colors"])
-    ax.scatter(x=label,y=h,color=colormap)
+    ax.scatter(x=x,y=h,color=colormap)
+        # Optionally: Label only the top 5 highest emissions
+    top_countries = cumulative_data.groupby("Code").tail(1).nlargest(5, "Aggregated emissions") #### Neeed to understand this part better.
+    for i, row in top_countries.iterrows():
+        ax.text(row["Year"], row["Aggregated emissions"], row["Code"], fontsize=14, ha='left')
     ax.yaxis.set_major_formatter(ScalarFormatter())
     formatter = ScalarFormatter()
     formatter.set_scientific(False)  # Disable scientific notation
