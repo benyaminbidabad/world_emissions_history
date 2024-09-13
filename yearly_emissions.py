@@ -38,6 +38,6 @@ def func(year):
     ax.tick_params(axis='both', which='major', labelsize=14)
 
 animation=FuncAnimation(fig,func,frames=sorted(data["Year"].unique()))
-animation.save("./animation.gif",dpi=100,writer=PillowWriter(fps=5))
+animation.save("./yearly_emissions.gif",dpi=100,writer=PillowWriter(fps=5))
 plt.show()
 
